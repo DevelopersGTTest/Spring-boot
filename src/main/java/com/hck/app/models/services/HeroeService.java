@@ -22,4 +22,23 @@ public class HeroeService implements IHeroe {
 		return  (List<Heroes>) heroesDao.findAll() ;
 	}
 
+	@Override
+	public Heroes findById(Long id) {
+		// TODO Auto-generated method stub
+		return heroesDao.findById(id)
+				.orElse(null);
+	}
+
+	@Override
+	public Heroes save(Heroes heroes) {
+		// TODO Auto-generated method stub
+		return heroesDao.save(heroes);
+	}
+
+	@Override
+	public void delete(Long id) {
+		// TODO Auto-generated method stub
+		heroesDao.deleteById(id);
+	}
+
 }
