@@ -53,8 +53,9 @@ public class HeroeController {
 	}
 	
 	@DeleteMapping("/heroes/{id}")
-	public void deleteHero(@PathVariable Long id ) {
+	public void deleteHero(@PathVariable Long id) {
 		heroeService.delete(id);
+		//implements https://stackoverflow.com/questions/30895286/spring-mvc-how-to-return-simple-string-as-json-in-rest-controller
 	}
 	
 }
