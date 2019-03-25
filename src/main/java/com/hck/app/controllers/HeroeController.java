@@ -39,11 +39,13 @@ public class HeroeController {
 		Heroes heroes = null;
 		
 		try {
+			
 			heroes = heroeService.findById(id);
+		
 		}catch(DataAccessException e) {
 			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}"
 					.concat(e.getMostSpecificCause().getMessage()),
-						HttpStatus.CONFLICT);
+						HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		if(heroes == null) {
@@ -55,8 +57,21 @@ public class HeroeController {
 	}
 	
 	@PostMapping("/heroes")
-	public Heroes storedHeroe(@RequestBody Heroes heroes ) {
-		return heroeService.save(heroes);
+	public ResponseEntity<?> storedHeroe(@RequestBody Heroes heroes ) {
+		
+		Heroes heroeNew = null;
+		
+		try {
+			
+			heroeNew = heroeService.save(heroes);
+		
+		}catch(DataAccessException e) {
+			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}"
+					.concat(e.getMostSpecificCause().getMessage()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<Heroes>(heroeNew, HttpStatus.CREATED) ;
 	}
 	
 	@PutMapping("/heroes/{id}")
