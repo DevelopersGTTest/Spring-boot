@@ -3,6 +3,9 @@ package com.hck.app.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +34,24 @@ public class HeroeController {
 	}
 	
 	@GetMapping("/heroes/{id}")
-	public Heroes showHeroes(@PathVariable Long id ) {
-		return heroeService.findById(id);
+	public ResponseEntity<?> showHeroes(@PathVariable Long id ) {
+		
+		Heroes heroes = null;
+		
+		try {
+			heroes = heroeService.findById(id);
+		}catch(DataAccessException e) {
+			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}"
+					.concat(e.getMostSpecificCause().getMessage()),
+						HttpStatus.CONFLICT);
+		}
+		
+		if(heroes == null) {
+			 return new ResponseEntity<>("{ \"message\" : \"Debe enviar un id valido\"}",
+					 HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<Heroes>(heroes, HttpStatus.OK);
 	}
 	
 	@PostMapping("/heroes")
