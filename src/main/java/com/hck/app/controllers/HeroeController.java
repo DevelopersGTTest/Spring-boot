@@ -115,7 +115,8 @@ public class HeroeController {
 			
 		}catch(DataAccessException e ) {
 			
-			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}",
+			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}"
+					.concat(e.getMostSpecificCause().getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
