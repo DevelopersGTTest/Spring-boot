@@ -43,13 +43,15 @@ public class HeroeController {
 			heroes = heroeService.findById(id);
 		
 		}catch(DataAccessException e) {
+			
 			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}"
 					.concat(e.getMostSpecificCause().getMessage()),
-						HttpStatus.INTERNAL_SERVER_ERROR);
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		if(heroes == null) {
-			 return new ResponseEntity<>("{ \"message\" : \"Debe enviar un id valido\"}",
+			
+			 return new ResponseEntity<>("{ \"message\" : \"el id no existe en la DB\"}",
 					 HttpStatus.NOT_FOUND);
 		}
 		
@@ -66,30 +68,58 @@ public class HeroeController {
 			heroeNew = heroeService.save(heroes);
 		
 		}catch(DataAccessException e) {
+			
 			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}"
 					.concat(e.getMostSpecificCause().getMessage()),
-						HttpStatus.INTERNAL_SERVER_ERROR);
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return new ResponseEntity<Heroes>(heroeNew, HttpStatus.CREATED) ;
 	}
 	
 	@PutMapping("/heroes/{id}")
-	public Heroes updateHero(@RequestBody Heroes heroe, @PathVariable Long id ) {
+	public ResponseEntity<?> updateHero(@RequestBody Heroes heroe, @PathVariable Long id ) {
 		
 		Heroes heroeDB = heroeService.findById(id);
+		Heroes heroeUpdated = null;
 		
-		heroeDB.setName(heroe.getName());
-		heroeDB.setPopularity(heroe.getPopularity());
-		heroeDB.setPower(heroe.getPower());
+		if(heroeDB == null ) {
+			return new ResponseEntity<>("{ \"message\" : \"el id no existe en la DB\"}"
+					,HttpStatus.NOT_FOUND );			
+		}
+			
+		try {
+			
+			heroeDB.setName(heroe.getName());
+			heroeDB.setPopularity(heroe.getPopularity());
+			heroeDB.setPower(heroe.getPower());
+			
+			 heroeUpdated = heroeService.save(heroeDB); 
+			
+		}catch(DataAccessException e) {
+			
+			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}"
+					.concat(e.getMostSpecificCause().getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);	
+		}
 		
-		return heroeService.save(heroeDB);
+		return new ResponseEntity<Heroes>(heroeUpdated, HttpStatus.CREATED );		
 	}
 	
 	@DeleteMapping("/heroes/{id}")
-	public void deleteHero(@PathVariable Long id) {
-		heroeService.delete(id);
-		//implements https://stackoverflow.com/questions/30895286/spring-mvc-how-to-return-simple-string-as-json-in-rest-controller
+	public ResponseEntity<?> deleteHero(@PathVariable Long id) {
+		
+		try {
+				
+			heroeService.delete(id);
+			
+		}catch(DataAccessException e ) {
+			
+			return new ResponseEntity<>("{ \"message\" : \"DB Errors\"}",
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<>("{ \"message\" : \"Eliminado con Exito ! \"}", HttpStatus.OK );
 	}
 	
 }
