@@ -28,6 +28,7 @@ public class Heroes implements Serializable {
 	
 	private Integer Popularity;
 	
+	//refactor a declare contructor
 	
 	
 	public Long getId() {
