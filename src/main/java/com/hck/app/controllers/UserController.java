@@ -25,6 +25,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	//migrate dto 
 	
 	@GetMapping("/users")
 	public List<Users> index(){
